@@ -1,0 +1,127 @@
+
+create database ProyectoBase;
+use ProyectoBase;
+----------------ALMACEN-------------------------------------------------------------------------------------------------
+
+create table Almacen(idProducto int not null,
+producto varchar(50) not null,
+prod_precio int not null,
+prod_cantidad int not null,
+primary key (idProducto));
+
+delimiter //
+create procedure LlenarProducto(in idProducto int, 
+producto varchar(50),
+prod_precio int,
+prod_cantidad int)
+begin
+insert into Almacen values(idProducto, producto, prod_precio, prod_cantidad);
+end //
+delimiter ;
+
+call LlenarProducto(1,"Almohada",50,1000);
+call LlenarProducto(2,"Anillos",30,1000);
+call LlenarProducto(3,"kit armas",350,1000);
+call LlenarProducto(4,"Bandana",20,1000);
+call LlenarProducto(5,"Bata akatsuki",500,1000);
+call LlenarProducto(6,"Bata hokage",500,1000);
+call LlenarProducto(7,"Blood repear",30,1000);
+call LlenarProducto(8,"Cartera",100,1000);
+call LlenarProducto(9,"Collar faraon",250,1000);
+call LlenarProducto(10,"Cubre bocas",25,1000);
+call LlenarProducto(11,"Dead note",100,1000);
+call LlenarProducto(12,"Esferas del dragon",350,1000);
+call LlenarProducto(13,"Estrella",50,1000);
+call LlenarProducto(14,"Figura obito",600,1000);
+call LlenarProducto(15,"Funda",30,1000);
+call LlenarProducto(16,"Funko dron locus",350,1000);
+call LlenarProducto(17,"Funko goku",350,1000);
+call LlenarProducto(18,"Funko ichigo",350,1000);
+call LlenarProducto(19,"Funko jiren",350,1000);
+call LlenarProducto(20,"Funko kaneki",350,1000);
+call LlenarProducto(21,"Funko L",350,1000);
+call LlenarProducto(22,"Funko vegeta",350,1000);
+call LlenarProducto(23,"Kunai",150,1000);
+call LlenarProducto(24,"Llaveros",15,1000);
+call LlenarProducto(25,"Mascara",70,1000);
+call LlenarProducto(26,"Pulsera",50,1000);
+call LlenarProducto(27,"Sudadera estampada",500,1000);
+call LlenarProducto(28,"Sudadera ahegao",600,1000);
+call LlenarProducto(29,"Sudadera naruto",500,1000);
+call LlenarProducto(30,"Taza",350,1000);
+call LlenarProducto(31,"Termo",80,1000);
+call LlenarProducto(32,"T-shirt",60,1000);
+
+
+-----------------PERSONAL-------------------------------------------------------------------------------------------------
+create table Personal(
+idpersonal int (5) PRIMARY KEY auto_increment,
+per_clave int (5) not null,
+per_nombre varchar (50) not null,
+per_paterno varchar (50) not null,
+per_materno varchar (50) not null,
+per_usuario varchar(50) not null,
+per_password varchar (20) not null,
+per_cargo varchar(50)
+);
+
+delimiter //
+	create procedure per_insert (in clave int (5),nombre varchar (50) ,
+	paterno varchar (50) ,
+	materno varchar (50) ,
+	usuario varchar(50) ,
+	password varchar (20) ,
+	cargo varchar(50))
+begin
+	 insert into personal values(NULL,clave,nombre,paterno,materno,usuario,password,cargo);
+end //
+delimiter ;
+insert into personal values(,12345,"jonathan","escobedo","romero","usuario","contra","Vendedor");
+
+
+-------------VENTA--------------------------------------------------------------------------------------------------------
+
+create table Venta(
+folio int (5) auto_increment,
+idVenta int (5),
+idProducto int not null,
+producto varchar (40) not null,
+ven_cantidad int not null,
+ven_precio int not null,
+ven_total int not null,
+per_clave int not null,
+fecha_hora timestamp,
+primary key(folio),
+foreign key (idProducto) references almacen (idProducto));
+
+
+delimiter //
+	create procedure llenar_venta(in idv int (5), producto varchar (50), cantidad int (5),clave int (5))
+begin
+	set @idp = (select idProducto from almacen where almacen.producto = producto);
+	set @pp = (select prod_precio from almacen where idproducto = @idp);
+	set @t = (@pp * cantidad);
+	
+	insert into venta values(null,idv,@idp,producto,cantidad,@pp,@t,clave,now());
+end //
+delimiter ;
+
+delimiter |
+	create trigger bitacora_venta after insert on venta
+for each row begin
+	set @cargo = (select per_cargo from personal where personal.per_clave = new.per_clave);
+	update almacen set prod_cantidad = prod_cantidad - new.ven_cantidad where almacen.producto = new.producto;
+end |
+delimiter ;	
+
+
+
+
+
+
+
+
+
+
+
+
